@@ -1,0 +1,5 @@
+pytest
+coverage
+pytest-cov
+git+https://github.com/kblin/mockredis.git
+git+https://github.com/kblin/mockaioredis.git
