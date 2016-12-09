@@ -63,6 +63,7 @@ async def test_downloaded(test_client):
     async with client.app['redis_pool'].get() as redis:
         assert b'queued' == redis._redis.hget('aso:job:bacterial-1234-5678', 'state')
 
+
 async def test_newSession(test_client):
     job = {
         'taxon': 'bacterial',
@@ -73,3 +74,21 @@ async def test_newSession(test_client):
     client = await test_client(create_app)
     resp = await client.post('/api/v1.0/session', data=json.dumps(job))
     assert 201 == resp.status
+    data = await resp.json()
+
+    expected = {
+        'state': 'created',
+        'status': 'Awaiting processing'
+    }
+    expected.update(job)
+    assert 'job_id' in data
+    assert data['job_id'].startswith('bacterial-')
+    del data['job_id']
+    assert expected == data
+    resp.close()
+
+    del job['taxon']
+    resp = await client.post('/api/v1.0/session', data=json.dumps(job))
+    assert 400 == resp.status
+    data = await resp.json()
+    assert {'error': 'invalid request'} == data

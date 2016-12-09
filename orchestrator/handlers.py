@@ -50,4 +50,4 @@ async def sessionNew(request):
             return json_response({'error': 'invalid request'}, status=400)
         await job.commit()
         await redis.lpush('aso:created', job.job_id)
-    return json_response(job.to_dict(), status=201)
+    return json_response(job.to_dict(extra_info=True), status=201)

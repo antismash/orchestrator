@@ -159,7 +159,7 @@ class Job:
         return cls
 
 
-    def to_dict(self):
+    def to_dict(self, extra_info=False):
         ret = {}
 
         args = self.PROPERTIES + self.ATTRIBUTES
@@ -167,6 +167,10 @@ class Job:
         for arg in args:
             if getattr(self, arg) is not None:
                 ret[arg] = getattr(self, arg)
+
+        if extra_info:
+            ret['job_id'] = self.job_id
+            ret['taxon'] = self.taxon
 
         return ret
 

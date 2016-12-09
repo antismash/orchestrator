@@ -153,6 +153,27 @@ def test_job_from_dict():
         Job.from_dict(None, data)
 
 
+def test_job_to_dict():
+    data = {
+        'taxon': 'bacterial',
+        'email': 'test@example.com',
+        'smcogs': True,
+        'asf': False,
+        'genefinding': 'prodigal',
+        'accession': 'AB12345',
+        'molecule_type': 'nucleotide',
+    }
+    job = Job.from_dict(None, data)
+
+    data['job_id'] = job.job_id
+    data['state'] = 'created'
+    data['status'] = 'Awaiting processing'
+
+    res = job.to_dict(extra_info=True)
+
+    assert res == data
+
+
 @pytest.mark.asyncio
 async def test_job_fetch(db):
     id_ = 'bacterial-1234-5678'
