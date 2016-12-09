@@ -94,10 +94,11 @@ class Job:
             'created',
             'downloading',
             'validating',
+            'queued',
             'running',
             'done',
             'failed'}:
-            raise ValueError('Invalid state')
+            raise ValueError('Invalid state {}'.format(value))
 
         self._state = value
 
@@ -109,7 +110,7 @@ class Job:
     @molecule_type.setter
     def molecule_type(self, value):
         if value not in {'nucleotide', 'protein'}:
-            raise ValueError('Invalid molecule_type')
+            raise ValueError('Invalid molecule_type {}'.format(value))
 
         self._molecule_type = value
 
@@ -121,7 +122,7 @@ class Job:
     @genefinding.setter
     def genefinding(self, value):
         if value not in {'prodigal', 'prodigal-m', 'none'}:
-            raise ValueError('Invalid genefinding method')
+            raise ValueError('Invalid genefinding method {}'.format(value))
         self._genefinding = value
 
 
@@ -175,6 +176,11 @@ class Job:
 
     async def fetch(self):
         args = self.PROPERTIES + self.ATTRIBUTES
+
+        job_exists = await self._db.exists(self._key)
+        if job_exists == 0:
+            raise ValueError("No job with ID {} in database, can't fetch".\
+                             format(self.job_id))
 
         values = await self._db.hmget(self._key, args)
 

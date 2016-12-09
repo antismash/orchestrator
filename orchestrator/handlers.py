@@ -21,7 +21,21 @@ async def version(request):
 
 async def downloaded(request):
     data = await request.json()
-    log.server_logger.info(data)
+    if 'job_id' not in data:
+        return json_response({'error': 'invalid request'}, status=400)
+    async with request.app['redis_pool'].get() as redis:
+        try:
+            job = Job(redis, data['job_id'])
+            await job.fetch()
+        except ValueError as e:
+            return json_response(
+                {'error': str(e)},
+                status=404)
+
+        job.state = 'queued'
+        job.status = 'Input downloaded, awaiting processing.'
+        await job.commit()
+        await redis.lpush('aso:queued', job.job_id)
     return web.Response(status=204)
 
 

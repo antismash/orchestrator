@@ -9,6 +9,7 @@ from orchestrator.app import generate_app
 async def init_redis(app):
     engine = await mockaioredis.create_pool(
         'fake address',
+        encoding='utf-8',
         loop=app.loop
     )
     app['redis_pool'] = engine
@@ -38,10 +39,29 @@ async def test_version(test_client):
 
 
 async def test_downloaded(test_client):
+    job = {
+        'molecule_type': 'nucleotide',
+        'genefinding': 'none',
+        'state': 'downloading',
+        'status': 'Downloading data from NCBI'
+    }
+
     client = await test_client(create_app)
+    async with client.app['redis_pool'].get() as redis:
+        redis._redis.hmset('aso:job:bacterial-1234-5678', job)
+
     resp = await client.post('/api/v1.0/downloaded', data=b'{"foo": "bar"}')
+    assert 400 == resp.status
+
+    resp = await client.post('/api/v1.0/downloaded', data=b'{"job_id": "no-such-job"}')
+    assert 404 == resp.status
+
+    job['job_id'] = 'bacterial-1234-5678'
+    resp = await client.post('/api/v1.0/downloaded', data=json.dumps(job).encode('utf-8'))
     assert 204 == resp.status
 
+    async with client.app['redis_pool'].get() as redis:
+        assert b'queued' == redis._redis.hget('aso:job:bacterial-1234-5678', 'state')
 
 async def test_newSession(test_client):
     job = {

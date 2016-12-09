@@ -151,3 +151,15 @@ def test_job_from_dict():
     data['taxon'] = 'invalid'
     with pytest.raises(ValueError):
         Job.from_dict(None, data)
+
+
+@pytest.mark.asyncio
+async def test_job_fetch(db):
+    id_ = 'bacterial-1234-5678'
+    job = Job(db, id_)
+
+    with pytest.raises(ValueError):
+        await job.fetch()
+
+    await job.commit()
+    await job.fetch()
