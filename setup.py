@@ -23,7 +23,7 @@ tests_require = [
     'pytest',
     'coverage',
     'pytest-cov',
-    'mockredis-kblin>=2.3.9.1',
+    'mockredispy-kblin>=2.3.9.1',
     'mockaioredis',
 ]
 
