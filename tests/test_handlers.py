@@ -4,7 +4,7 @@ import json
 import mockaioredis
 
 from orchestrator import handlers, version
-from orchestrator.app import generate_app
+from orchestrator.application import generate_app
 
 async def init_redis(app):
     engine = await mockaioredis.create_pool(

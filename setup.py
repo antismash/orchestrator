@@ -15,6 +15,7 @@ install_requires = [
     'aioredis',
     'cchardet',
     'envparse',
+    'gunicorn',
 ]
 
 
