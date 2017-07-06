@@ -1,4 +1,4 @@
-unit:
+unit:	clean
 	py.test -v
 
 coverage:
@@ -9,3 +9,7 @@ production:
 
 develop:
 	gunicorn orchestrator:app -b 127.0.0.1:5020 --worker-class aiohttp.GunicornWebWorker --reload
+
+clean:
+	find . -type f -name "*.py[co]" -delete
+	find . -type d -name "__pycache__" -delete
