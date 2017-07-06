@@ -47,7 +47,9 @@ async def test_downloaded(test_client):
     }
 
     client = await test_client(create_app)
-    async with client.app['redis_pool'].get() as redis:
+    app = client._server.app
+
+    async with app['redis_pool'].get() as redis:
         redis._redis.hmset('aso:job:bacterial-1234-5678', job)
 
     resp = await client.post('/api/v1.0/downloaded', data=b'{"foo": "bar"}')
@@ -60,7 +62,7 @@ async def test_downloaded(test_client):
     resp = await client.post('/api/v1.0/downloaded', data=json.dumps(job).encode('utf-8'))
     assert 204 == resp.status
 
-    async with client.app['redis_pool'].get() as redis:
+    async with app['redis_pool'].get() as redis:
         assert b'queued' == redis._redis.hget('aso:job:bacterial-1234-5678', 'state')
 
 
