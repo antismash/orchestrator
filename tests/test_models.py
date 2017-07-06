@@ -8,7 +8,6 @@ def db():
     return MockRedis(encoding='utf-8')
 
 
-@pytest.mark.asyncio
 async def test_job_init(db):
     id_ = 'bacterial-1234-5678'
     job = Job(db, id_)
@@ -32,7 +31,6 @@ async def test_job_init(db):
 
 
 
-@pytest.mark.asyncio
 async def test_job_accession(db):
     id_ = 'bacterial-1234-5678'
     job = Job(db, id_)
@@ -45,7 +43,6 @@ async def test_job_accession(db):
     assert job.accession == 'ABC1234'
 
 
-@pytest.mark.asyncio
 async def test_job_bools(db):
     id_ = 'bacterial-1234-5678'
     job = Job(db, id_)
@@ -65,7 +62,6 @@ async def test_job_bools(db):
     assert job.smcogs == False
 
 
-@pytest.mark.asyncio
 async def test_job_ints(db):
     id_ = 'bacterial-1234-5678'
     job = Job(db, id_)
@@ -81,7 +77,6 @@ async def test_job_ints(db):
     assert job.seed == 1234
 
 
-@pytest.mark.asyncio
 async def test_job_floats(db):
     id_ = 'bacterial-1234-5678'
     job = Job(db, id_)
@@ -174,7 +169,6 @@ def test_job_to_dict():
     assert res == data
 
 
-@pytest.mark.asyncio
 async def test_job_fetch(db):
     id_ = 'bacterial-1234-5678'
     job = Job(db, id_)
